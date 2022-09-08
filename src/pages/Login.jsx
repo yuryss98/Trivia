@@ -35,40 +35,48 @@ export default class Login extends Component {
     const { isDisabled, email, nameInput } = this.state;
 
     return (
-      <form>
-        <label htmlFor="nameInput">
-          Nome:
-          <input
-            type="text"
-            name="nameInput"
-            value={ nameInput }
-            onChange={ this.handleChange }
-            id="nameInput"
-            data-testid="input-player-name"
-          />
-        </label>
+      <div>
+        <div>
+          <h1 data-testid="settings-title">Configurações</h1>
+          <button type="button" data-testid="btn-settings">Ir para configurações</button>
 
-        <label htmlFor="email">
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={ email }
-            onChange={ this.handleChange }
-            id="email"
-            data-testid="input-gravatar-email"
-          />
-        </label>
+        </div>
 
-        <button
-          type="button"
-          disabled={ isDisabled }
-          data-testid="btn-play"
-        >
-          Play
+        <form>
+          <label htmlFor="nameInput">
+            Nome:
+            <input
+              type="text"
+              name="nameInput"
+              value={ nameInput }
+              onChange={ this.handleChange }
+              id="nameInput"
+              data-testid="input-player-name"
+            />
+          </label>
 
-        </button>
-      </form>
+          <label htmlFor="email">
+            Email:
+            <input
+              type="email"
+              name="email"
+              value={ email }
+              onChange={ this.handleChange }
+              id="email"
+              data-testid="input-gravatar-email"
+            />
+          </label>
+
+          <button
+            type="button"
+            disabled={ isDisabled }
+            data-testid="btn-play"
+          >
+            Play
+
+          </button>
+        </form>
+      </div>
     );
   }
 }
