@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { md5 } from 'crypto-js/md5';
+import md5 from 'crypto-js/md5';
+import PropTypes from 'prop-types';
 
 class Game extends Component {
   render() {
@@ -16,9 +17,14 @@ class Game extends Component {
   }
 }
 
+Game.propTypes = {
+  email: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+};
+
 const mapStateToProps = (state) => ({
-  name: state.player.name,
-  email: state.player.gravatarEmail,
+  name: state.getPlayer.name,
+  email: state.getPlayer.gravatarEmail,
 });
 
 export default connect(mapStateToProps)(Game);
