@@ -1,3 +1,3 @@
-export const XABLAU = 'XABLAU';
+export const CREATE_PLAYER = 'CREATE_PLAYER';
 
-export const XABLAU_2 = 'XABLAU_2';
+export const GET_USER_INFO = 'GET_USER_INFO';
