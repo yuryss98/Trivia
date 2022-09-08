@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import getToken from '../helpers/services';
+import userInfoAction from '../redux/actions';
 
-export default class Login extends Component {
+class Login extends Component {
   state = {
     email: '',
     nameInput: '',
@@ -31,6 +35,18 @@ export default class Login extends Component {
     }
   };
 
+  handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const { dispatch, history: { push } } = this.props;
+    const { nameInput, email } = this.state;
+
+    await getToken();
+
+    dispatch(userInfoAction(nameInput, email));
+    push('/game');
+  };
+
   render() {
     const { isDisabled, email, nameInput } = this.state;
 
@@ -39,10 +55,9 @@ export default class Login extends Component {
         <div>
           <h1 data-testid="settings-title">Configurações</h1>
           <button type="button" data-testid="btn-settings">Ir para configurações</button>
-
         </div>
 
-        <form>
+        <form onSubmit={ this.handleSubmit }>
           <label htmlFor="nameInput">
             Nome:
             <input
@@ -68,15 +83,24 @@ export default class Login extends Component {
           </label>
 
           <button
-            type="button"
+            type="submit"
             disabled={ isDisabled }
             data-testid="btn-play"
           >
             Play
-
           </button>
         </form>
+
       </div>
     );
   }
 }
+
+Login.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+export default connect()(Login);
