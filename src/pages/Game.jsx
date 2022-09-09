@@ -27,6 +27,14 @@ class Game extends Component {
     });
   };
 
+  shuffleArray = (arr) => {
+    for (let i = arr.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
   requestError = () => {
     const { history } = this.props;
     localStorage.removeItem('token');
@@ -48,7 +56,11 @@ class Game extends Component {
 
       <div>
         <header>
-          <img src={ `https://www.gravatar.com/avatar/${avatarImage}` } alt="imagem de perfil" data-testid="header-profile-picture" />
+          <img
+            src={ `https://www.gravatar.com/avatar/${avatarImage}` }
+            alt="imagem de perfil"
+            data-testid="header-profile-picture"
+          />
           <p data-testid="header-player-name">{ name }</p>
           <p data-testid="header-score">Placar: 0</p>
         </header>
@@ -62,23 +74,38 @@ class Game extends Component {
 
               <div data-testid="answer-options">
 
-                {questions[index].incorrect_answers.map((item, numIndex) => (
-                  <button
-                    key={ item }
-                    type="button"
-                    onClick={ this.updateIndex }
-                    data-testid={ `wrong-answer-${numIndex}` }
-                  >
-                    {item}
-                  </button>))}
-
-                <button
-                  type="button"
-                  onClick={ this.updateIndex }
-                  data-testid="correct-answer"
-                >
-                  {questions[index].correct_answer}
-                </button>
+                {questions.map((_, numIndex) => {
+                  if (numIndex === index) {
+                    const wrongAnswers = [...questions[index].incorrect_answers];
+                    const answers = [...wrongAnswers, questions[index].correct_answer];
+                    const correctAnswer = answers[answers.length - 1];
+                    const newQuestions = this.shuffleArray(answers);
+                    return newQuestions.map((question) => {
+                      if (question === correctAnswer) {
+                        return (
+                          <button
+                            type="button"
+                            onClick={ this.updateIndex }
+                            data-testid="correct-answer"
+                          >
+                            {questions[index].correct_answer}
+                          </button>
+                        );
+                      }
+                      return (
+                        <button
+                          key={ question }
+                          type="button"
+                          onClick={ this.updateIndex }
+                          data-testid={ `wrong-answer-${numIndex}` }
+                        >
+                          {question}
+                        </button>
+                      );
+                    });
+                  }
+                  return null;
+                })}
               </div>
             </div>
           )
