@@ -3,27 +3,45 @@ import { connect } from 'react-redux';
 import md5 from 'crypto-js/md5';
 import PropTypes from 'prop-types';
 import { getQuestions } from '../helpers/services';
+import '../answers.css';
 
 class Game extends Component {
   state = {
     index: 0,
     questions: [],
+    nextQuestion: false,
+    correctAnswer: '',
+    shuffledArray: [],
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     this.verifyResponseCode();
   }
 
   verifyResponseCode = async () => {
     const response = await getQuestions();
     const { response_code: responseCode, results } = response;
-    const ERROR_REQUEST_CODE = 3;
-    if (responseCode === ERROR_REQUEST_CODE) {
-      return this.requestError();
+    const CORRECT_REQUEST_CODE = 0;
+    if (responseCode !== CORRECT_REQUEST_CODE) {
+      this.requestError();
+    } else {
+      this.setState({
+        questions: results,
+      });
+      this.generateQuestions(results);
     }
+  };
+
+  generateQuestions = (results) => {
+    const { index } = this.state;
+    const wrongAnswers = [...results[index].incorrect_answers];
+    const answers = [...wrongAnswers, results[index].correct_answer];
+    const correctAnswer = answers[answers.length - 1];
+    const newQuestions = this.shuffleArray(answers);
 
     this.setState({
-      questions: results,
+      correctAnswer,
+      shuffledArray: newQuestions,
     });
   };
 
@@ -41,36 +59,31 @@ class Game extends Component {
     history.push('/');
   };
 
-  // updateIndex = () => {
-  //   this.setState(({ index }) => ({
-  //     index: index + 1,
-  //   }));
-  // };
+  updateIndex = () => {
+    this.setState(({ index }) => ({
+      index: index + 1,
+      nextQuestion: false,
+    }));
 
-  setColor = ({ target }) => {
-    const getElement = target.getAttribute('data-getElementid');
-    const getParent = target.parentElement;
-    const getChildren = getParent.children;
+    const { questions } = this.state;
 
-    for (let i = 0; i < getChildren.length; i += 1) {
-      getChildren[i].style.border = '3px solid red';
-    }
+    this.generateQuestions(questions);
+  };
 
-    const correctAnswer = 'correct-answer';
-
-    if (getElement === correctAnswer) {
-      target.style.border = '3px solid rgb(6, 240, 15)';
-    } else {
-      for (let i = 0; i < getChildren.length; i += 1) {
-        if (getChildren[i].getAttribute('data-testid') === correctAnswer) {
-          getChildren[i].style.border = '3px solid rgb(6, 240, 15)';
-        }
-      }
-    }
+  setColor = () => {
+    this.setState({
+      nextQuestion: true,
+    });
   };
 
   render() {
-    const { questions, index } = this.state;
+    const {
+      questions,
+      shuffledArray,
+      correctAnswer,
+      index,
+      nextQuestion,
+    } = this.state;
     const { email, name } = this.props;
     const avatarImage = md5(email).toString();
 
@@ -96,39 +109,47 @@ class Game extends Component {
 
               <div data-testid="answer-options">
 
-                {questions.map((_, numIndex) => {
-                  if (numIndex === index) {
-                    const wrongAnswers = [...questions[index].incorrect_answers];
-                    const answers = [...wrongAnswers, questions[index].correct_answer];
-                    const correctAnswer = answers[answers.length - 1];
-                    const newQuestions = this.shuffleArray(answers);
-                    return newQuestions.map((question) => {
-                      if (question === correctAnswer) {
-                        return (
-                          <button
-                            type="button"
-                            onClick={ this.setColor }
-                            data-testid="correct-answer"
-                          >
-                            {questions[index].correct_answer}
-                          </button>
-                        );
-                      }
-                      return (
-                        <button
-                          key={ question }
-                          type="button"
-                          onClick={ this.setColor }
-                          data-testid={ `wrong-answer-${numIndex}` }
-                        >
-                          {question}
-                        </button>
-                      );
-                    });
+                {shuffledArray.map((questao, numIndex) => {
+                  if (questao === correctAnswer) {
+                    return (
+                      <button
+                        className={ nextQuestion && 'correctAnswer' }
+                        type="button"
+                        onClick={ this.setColor }
+                        data-testid="correct-answer"
+                      >
+                        { questao }
+                      </button>
+                    );
                   }
-                  return null;
+                  return (
+                    <button
+                      className={ nextQuestion && 'incorrectAnswers' }
+                      key={ questao }
+                      type="button"
+                      onClick={ this.setColor }
+                      data-testid={ `wrong-answer-${numIndex}` }
+                    >
+                      {questao}
+                    </button>
+                  );
                 })}
               </div>
+            </div>
+          )
+        }
+
+        {
+          nextQuestion && (
+            <div>
+              <button
+                data-testid="btn-next"
+                type="button"
+                onClick={ this.updateIndex }
+              >
+                Next
+
+              </button>
             </div>
           )
         }
