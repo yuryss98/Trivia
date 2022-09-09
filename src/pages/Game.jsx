@@ -41,10 +41,32 @@ class Game extends Component {
     history.push('/');
   };
 
-  updateIndex = () => {
-    this.setState(({ index }) => ({
-      index: index + 1,
-    }));
+  // updateIndex = () => {
+  //   this.setState(({ index }) => ({
+  //     index: index + 1,
+  //   }));
+  // };
+
+  setColor = ({ target }) => {
+    const getElement = target.getAttribute('data-getElementid');
+    const getParent = target.parentElement;
+    const getChildren = getParent.children;
+
+    for (let i = 0; i < getChildren.length; i += 1) {
+      getChildren[i].style.border = '3px solid red';
+    }
+
+    const correctAnswer = 'correct-answer';
+
+    if (getElement === correctAnswer) {
+      target.style.border = '3px solid rgb(6, 240, 15)';
+    } else {
+      for (let i = 0; i < getChildren.length; i += 1) {
+        if (getChildren[i].getAttribute('data-testid') === correctAnswer) {
+          getChildren[i].style.border = '3px solid rgb(6, 240, 15)';
+        }
+      }
+    }
   };
 
   render() {
@@ -85,7 +107,7 @@ class Game extends Component {
                         return (
                           <button
                             type="button"
-                            onClick={ this.updateIndex }
+                            onClick={ this.setColor }
                             data-testid="correct-answer"
                           >
                             {questions[index].correct_answer}
@@ -96,7 +118,7 @@ class Game extends Component {
                         <button
                           key={ question }
                           type="button"
-                          onClick={ this.updateIndex }
+                          onClick={ this.setColor }
                           data-testid={ `wrong-answer-${numIndex}` }
                         >
                           {question}
