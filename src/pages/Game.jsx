@@ -76,12 +76,12 @@ class Game extends Component {
 
                 {questions.map((_, numIndex) => {
                   if (numIndex === index) {
-                    const arr0 = [...questions[index].incorrect_answers];
-                    const arr1 = [...arr0, questions[index].correct_answer];
-                    const respotaCerta = arr1[arr1.length - 1];
-                    const embaralhar = this.shuffleArray(arr1);
-                    return embaralhar.map((el) => {
-                      if (el === respotaCerta) {
+                    const wrongAnswers = [...questions[index].incorrect_answers];
+                    const answers = [...wrongAnswers, questions[index].correct_answer];
+                    const correctAnswer = answers[answers.length - 1];
+                    const newQuestions = this.shuffleArray(answers);
+                    return newQuestions.map((question) => {
+                      if (question === correctAnswer) {
                         return (
                           <button
                             type="button"
@@ -94,12 +94,12 @@ class Game extends Component {
                       }
                       return (
                         <button
-                          key={ el }
+                          key={ question }
                           type="button"
                           onClick={ this.updateIndex }
                           data-testid={ `wrong-answer-${numIndex}` }
                         >
-                          {el}
+                          {question}
                         </button>
                       );
                     });
