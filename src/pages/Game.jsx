@@ -27,6 +27,14 @@ class Game extends Component {
     });
   };
 
+  shuffleArray = (arr) => {
+    for (let i = arr.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
   requestError = () => {
     const { history } = this.props;
     localStorage.removeItem('token');
@@ -48,7 +56,11 @@ class Game extends Component {
 
       <div>
         <header>
-          <img src={ `https://www.gravatar.com/avatar/${avatarImage}` } alt="imagem de perfil" data-testid="header-profile-picture" />
+          <img
+            src={ `https://www.gravatar.com/avatar/${avatarImage}` }
+            alt="imagem de perfil"
+            data-testid="header-profile-picture"
+          />
           <p data-testid="header-player-name">{ name }</p>
           <p data-testid="header-score">Placar: 0</p>
         </header>
@@ -62,23 +74,38 @@ class Game extends Component {
 
               <div data-testid="answer-options">
 
-                {questions[index].incorrect_answers.map((item, numIndex) => (
-                  <button
-                    key={ item }
-                    type="button"
-                    onClick={ this.updateIndex }
-                    data-testid={ `wrong-answer-${numIndex}` }
-                  >
-                    {item}
-                  </button>))}
-
-                <button
-                  type="button"
-                  onClick={ this.updateIndex }
-                  data-testid="correct-answer"
-                >
-                  {questions[index].correct_answer}
-                </button>
+                {questions.map((_, numIndex) => {
+                  if (numIndex === index) {
+                    const arr0 = [...questions[index].incorrect_answers];
+                    const arr1 = [...arr0, questions[index].correct_answer];
+                    const respotaCerta = arr1[arr1.length - 1];
+                    const embaralhar = this.shuffleArray(arr1);
+                    return embaralhar.map((el) => {
+                      if (el === respotaCerta) {
+                        return (
+                          <button
+                            type="button"
+                            onClick={ this.updateIndex }
+                            data-testid="correct-answer"
+                          >
+                            {questions[index].correct_answer}
+                          </button>
+                        );
+                      }
+                      return (
+                        <button
+                          key={ el }
+                          type="button"
+                          onClick={ this.updateIndex }
+                          data-testid={ `wrong-answer-${numIndex}` }
+                        >
+                          {el}
+                        </button>
+                      );
+                    });
+                  }
+                  return null;
+                })}
               </div>
             </div>
           )
