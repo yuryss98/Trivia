@@ -1,6 +1,6 @@
-import { GET_USER_INFO } from './actionsTypes';
+import { GET_USER_INFO, SET_SCORE } from './actionsTypes';
 
-const userInfoAction = (name, gravatarEmail) => ({
+export const userInfoAction = (name, gravatarEmail) => ({
   type: GET_USER_INFO,
   payload: {
     name,
@@ -8,4 +8,6 @@ const userInfoAction = (name, gravatarEmail) => ({
   },
 });
 
-export default userInfoAction;
+export const setScore = () => ({
+  type: SET_SCORE,
+});

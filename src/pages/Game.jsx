@@ -4,6 +4,7 @@ import md5 from 'crypto-js/md5';
 import PropTypes from 'prop-types';
 import { getQuestions } from '../helpers/services';
 import '../answers.css';
+import { setScore } from '../redux/actions';
 
 class Game extends Component {
   state = {
@@ -21,6 +22,7 @@ class Game extends Component {
   verifyResponseCode = async () => {
     const response = await getQuestions();
     const { response_code: responseCode, results } = response;
+    console.log(results);
     const CORRECT_REQUEST_CODE = 0;
     if (responseCode !== CORRECT_REQUEST_CODE) {
       this.requestError();
@@ -63,14 +65,19 @@ class Game extends Component {
     this.setState(({ index }) => ({
       index: index + 1,
       nextQuestion: false,
-    }));
+    }), () => {
+      const { questions } = this.state;
 
-    const { questions } = this.state;
-
-    this.generateQuestions(questions);
+      this.generateQuestions(questions);
+    });
   };
 
-  setColor = () => {
+  setColor = (question, correctAnswer) => {
+    if (question === correctAnswer) {
+      const { dispatch } = this.props;
+      dispatch(setScore());
+    }
+
     this.setState({
       nextQuestion: true,
     });
@@ -109,28 +116,29 @@ class Game extends Component {
 
               <div data-testid="answer-options">
 
-                {shuffledArray.map((questao, numIndex) => {
-                  if (questao === correctAnswer) {
+                {shuffledArray.map((question, numIndex) => {
+                  if (question === correctAnswer) {
                     return (
                       <button
                         className={ nextQuestion && 'correctAnswer' }
+                        key={ question }
                         type="button"
-                        onClick={ this.setColor }
+                        onClick={ () => this.setColor(question, correctAnswer) }
                         data-testid="correct-answer"
                       >
-                        { questao }
+                        { question }
                       </button>
                     );
                   }
                   return (
                     <button
                       className={ nextQuestion && 'incorrectAnswers' }
-                      key={ questao }
+                      key={ question }
                       type="button"
-                      onClick={ this.setColor }
+                      onClick={ () => this.setColor(question, correctAnswer) }
                       data-testid={ `wrong-answer-${numIndex}` }
                     >
-                      {questao}
+                      {question}
                     </button>
                   );
                 })}
@@ -165,11 +173,12 @@ Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  name: state.getPlayer.name,
-  email: state.getPlayer.gravatarEmail,
+  name: state.player.name,
+  email: state.player.gravatarEmail,
 });
 
 export default connect(mapStateToProps)(Game);

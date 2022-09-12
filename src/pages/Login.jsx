@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getToken } from '../helpers/services';
-import userInfoAction from '../redux/actions';
+import { userInfoAction } from '../redux/actions';
 
 class Login extends Component {
   state = {
