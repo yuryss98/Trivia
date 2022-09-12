@@ -27,9 +27,7 @@ class Game extends Component {
   verifyResponseCode = async () => {
     const response = await getQuestions();
     const { response_code: responseCode, results } = response;
-    console.log(results);
     const CORRECT_REQUEST_CODE = 0;
-    console.log(response);
     if (responseCode !== CORRECT_REQUEST_CODE) {
       this.requestError();
     } else {
@@ -68,15 +66,22 @@ class Game extends Component {
   };
 
   updateIndex = () => {
-    this.setState(({ index }) => ({
-      index: index + 1,
-      nextQuestion: false,
-      countDown: 30,
-      disabled: false,
-    }), () => {
-      const { questions } = this.state;
-      this.generateQuestions(questions);
-    });
+    const { index } = this.state;
+    const { questions } = this.state;
+
+    if (index !== questions.length - 1) {
+      this.setState((prevState) => ({
+        index: prevState.index + 1,
+        nextQuestion: false,
+        countDown: 30,
+        disabled: false,
+      }), () => {
+        this.generateQuestions(questions);
+      });
+    } else {
+      const { history } = this.props;
+      history.push('/feedback');
+    }
   };
 
   getDifficulty = (difficulty) => {
