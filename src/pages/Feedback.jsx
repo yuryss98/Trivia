@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 
-class Feedback extends Component {
+export default class Feedback extends Component {
   render() {
     return (
-      <div>
-        <h1 data-testid="feedback-text">Feedback</h1>
-      </div>
+      <div>Feedback</div>
     );
   }
 }
-
-export default Feedback;
