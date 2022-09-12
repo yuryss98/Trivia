@@ -12,6 +12,7 @@ class Game extends Component {
   state = {
     index: 0,
     questions: [],
+    assertions: 0,
     nextQuestion: false,
     correctAnswer: '',
     shuffledArray: [],
@@ -104,7 +105,12 @@ class Game extends Component {
       const { countDown } = this.state;
       const number = 10;
       const points = number + (countDown * difficultyValue);
-      dispatch(setScore(points));
+      this.setState(({ assertions }) => ({
+        assertions: assertions + 1,
+      }), () => {
+        const { assertions } = this.state;
+        dispatch(setScore(points, assertions));
+      });
     }
 
     this.setState({
@@ -222,4 +228,10 @@ Game.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
 
-export default connect()(Game);
+const mapStateToProps = (state) => ({
+  name: state.player.name,
+  email: state.player.gravatarEmail,
+  assertions: state.player.assertions,
+});
+
+export default connect(mapStateToProps)(Game);
