@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import md5 from 'crypto-js/md5';
 import PropTypes from 'prop-types';
 import { getQuestions } from '../helpers/services';
 import '../answers.css';
 import { setScore } from '../redux/actions';
+import Header from '../components/Header';
 
 const MIN_SECONDS = 1000;
 
@@ -148,21 +148,11 @@ class Game extends Component {
       countDown,
       disabled,
     } = this.state;
-    const { email, name } = this.props;
-    const avatarImage = md5(email).toString();
 
     return (
 
       <div>
-        <header>
-          <img
-            src={ `https://www.gravatar.com/avatar/${avatarImage}` }
-            alt="imagem de perfil"
-            data-testid="header-profile-picture"
-          />
-          <p data-testid="header-player-name">{ name }</p>
-          <p data-testid="header-score">Placar: 0</p>
-        </header>
+        <Header />
 
         <p>{countDown}</p>
         {
@@ -232,8 +222,6 @@ class Game extends Component {
 }
 
 Game.propTypes = {
-  email: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
