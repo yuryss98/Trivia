@@ -4,6 +4,7 @@ import md5 from 'crypto-js/md5';
 import PropTypes from 'prop-types';
 import { getQuestions } from '../helpers/services';
 import '../answers.css';
+import { setScore } from '../redux/actions';
 
 const MIN_SECONDS = 1000;
 
@@ -14,7 +15,7 @@ class Game extends Component {
     nextQuestion: false,
     correctAnswer: '',
     shuffledArray: [],
-    coutdown: 30,
+    countDown: 30,
     disabled: false,
   };
 
@@ -26,6 +27,7 @@ class Game extends Component {
   verifyResponseCode = async () => {
     const response = await getQuestions();
     const { response_code: responseCode, results } = response;
+    console.log(results);
     const CORRECT_REQUEST_CODE = 0;
     console.log(response);
     if (responseCode !== CORRECT_REQUEST_CODE) {
@@ -69,28 +71,49 @@ class Game extends Component {
     this.setState(({ index }) => ({
       index: index + 1,
       nextQuestion: false,
-      coutdown: 30,
+      countDown: 30,
       disabled: false,
-    }));
-
-    const { questions } = this.state;
-
-    this.generateQuestions(questions);
+    }), () => {
+      const { questions } = this.state;
+      this.generateQuestions(questions);
+    });
   };
 
-  setColor = () => {
+  getDifficulty = (difficulty) => {
+    const hard = 3;
+    switch (difficulty) {
+    case 'easy':
+      return 1;
+
+    case 'medium':
+      return 2;
+
+    default: return hard;
+    }
+  };
+
+  setColor = (question, correctAnswer, difficulty) => {
+    const difficultyValue = this.getDifficulty(difficulty);
+    if (question === correctAnswer) {
+      const { dispatch } = this.props;
+      const { countDown } = this.state;
+      const number = 10;
+      const points = number + (countDown * difficultyValue);
+      dispatch(setScore(points));
+    }
+
     this.setState({
       nextQuestion: true,
     });
   };
 
   timer = () => {
-    this.setState(({ coutdown }) => ({
-      coutdown: coutdown - 1,
+    this.setState(({ countDown }) => ({
+      countDown: countDown - 1,
     }), () => {
-      const { coutdown } = this.state;
+      const { countDown } = this.state;
 
-      if (coutdown === 0) {
+      if (countDown === 0) {
         this.setState({
           disabled: true,
         });
@@ -111,7 +134,7 @@ class Game extends Component {
       correctAnswer,
       index,
       nextQuestion,
-      coutdown,
+      countDown,
       disabled,
     } = this.state;
     const { email, name } = this.props;
@@ -130,7 +153,7 @@ class Game extends Component {
           <p data-testid="header-score">Placar: 0</p>
         </header>
 
-        <p>{coutdown}</p>
+        <p>{countDown}</p>
         {
           questions.length && (
 
@@ -141,30 +164,34 @@ class Game extends Component {
 
               <div data-testid="answer-options">
 
-                {shuffledArray.map((questao, numIndex) => {
-                  if (questao === correctAnswer) {
+                {shuffledArray.map((question, numIndex) => {
+                  const { difficulty } = questions[index];
+                  if (question === correctAnswer) {
                     return (
                       <button
                         className={ nextQuestion && 'correctAnswer' }
+                        key={ question }
                         type="button"
-                        onClick={ this.setColor }
+                        onClick={ () => (
+                          this.setColor(question, correctAnswer, difficulty)) }
                         data-testid="correct-answer"
                         disabled={ disabled }
                       >
-                        { questao }
+                        { question }
                       </button>
                     );
                   }
                   return (
                     <button
                       className={ nextQuestion && 'incorrectAnswers' }
-                      key={ questao }
+                      key={ question }
                       type="button"
-                      onClick={ this.setColor }
+                      onClick={ () => (
+                        this.setColor(question, correctAnswer, difficulty)) }
                       data-testid={ `wrong-answer-${numIndex}` }
                       disabled={ disabled }
                     >
-                      {questao}
+                      {question}
                     </button>
                   );
                 })}
@@ -199,11 +226,12 @@ Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  name: state.getPlayer.name,
-  email: state.getPlayer.gravatarEmail,
+  name: state.player.name,
+  email: state.player.gravatarEmail,
 });
 
 export default connect(mapStateToProps)(Game);
