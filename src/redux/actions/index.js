@@ -8,7 +8,8 @@ export const userInfoAction = (name, gravatarEmail) => ({
   },
 });
 
-export const setScore = (points) => ({
+export const setScore = (points, assertions) => ({
   type: SET_SCORE,
   points,
+  assertions,
 });
