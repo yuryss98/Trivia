@@ -163,7 +163,6 @@ class Game extends Component {
                       onClick={ this.setColor }
                       data-testid={ `wrong-answer-${numIndex}` }
                       disabled={ disabled }
-
                     >
                       {questao}
                     </button>
