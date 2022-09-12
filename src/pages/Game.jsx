@@ -6,6 +6,8 @@ import { getQuestions } from '../helpers/services';
 import '../answers.css';
 import { setScore } from '../redux/actions';
 
+const MIN_SECONDS = 1000;
+
 class Game extends Component {
   state = {
     index: 0,
@@ -13,10 +15,13 @@ class Game extends Component {
     nextQuestion: false,
     correctAnswer: '',
     shuffledArray: [],
+    countDown: 30,
+    disabled: false,
   };
 
   componentDidMount() {
     this.verifyResponseCode();
+    this.intervalFunc();
   }
 
   verifyResponseCode = async () => {
@@ -24,6 +29,7 @@ class Game extends Component {
     const { response_code: responseCode, results } = response;
     console.log(results);
     const CORRECT_REQUEST_CODE = 0;
+    console.log(response);
     if (responseCode !== CORRECT_REQUEST_CODE) {
       this.requestError();
     } else {
@@ -65,22 +71,60 @@ class Game extends Component {
     this.setState(({ index }) => ({
       index: index + 1,
       nextQuestion: false,
+      countDown: 30,
+      disabled: false,
     }), () => {
       const { questions } = this.state;
-
       this.generateQuestions(questions);
     });
   };
 
-  setColor = (question, correctAnswer) => {
+  getDifficulty = (difficulty) => {
+    const hard = 3;
+    switch (difficulty) {
+    case 'easy':
+      return 1;
+
+    case 'medium':
+      return 2;
+
+    default: return hard;
+    }
+  };
+
+  setColor = (question, correctAnswer, difficulty) => {
+    const difficultyValue = this.getDifficulty(difficulty);
     if (question === correctAnswer) {
       const { dispatch } = this.props;
-      dispatch(setScore());
+      const { countDown } = this.state;
+      const number = 10;
+      const points = number + (countDown * difficultyValue);
+      dispatch(setScore(points));
     }
 
     this.setState({
       nextQuestion: true,
     });
+  };
+
+  timer = () => {
+    this.setState(({ countDown }) => ({
+      countDown: countDown - 1,
+    }), () => {
+      const { countDown } = this.state;
+
+      if (countDown === 0) {
+        this.setState({
+          disabled: true,
+        });
+      }
+    });
+  };
+
+  intervalFunc = () => {
+    setInterval(() => {
+      this.timer();
+    }, MIN_SECONDS);
   };
 
   render() {
@@ -90,6 +134,8 @@ class Game extends Component {
       correctAnswer,
       index,
       nextQuestion,
+      countDown,
+      disabled,
     } = this.state;
     const { email, name } = this.props;
     const avatarImage = md5(email).toString();
@@ -106,6 +152,8 @@ class Game extends Component {
           <p data-testid="header-player-name">{ name }</p>
           <p data-testid="header-score">Placar: 0</p>
         </header>
+
+        <p>{countDown}</p>
         {
           questions.length && (
 
@@ -117,14 +165,17 @@ class Game extends Component {
               <div data-testid="answer-options">
 
                 {shuffledArray.map((question, numIndex) => {
+                  const { difficulty } = questions[index];
                   if (question === correctAnswer) {
                     return (
                       <button
                         className={ nextQuestion && 'correctAnswer' }
                         key={ question }
                         type="button"
-                        onClick={ () => this.setColor(question, correctAnswer) }
+                        onClick={ () => (
+                          this.setColor(question, correctAnswer, difficulty)) }
                         data-testid="correct-answer"
+                        disabled={ disabled }
                       >
                         { question }
                       </button>
@@ -135,8 +186,10 @@ class Game extends Component {
                       className={ nextQuestion && 'incorrectAnswers' }
                       key={ question }
                       type="button"
-                      onClick={ () => this.setColor(question, correctAnswer) }
+                      onClick={ () => (
+                        this.setColor(question, correctAnswer, difficulty)) }
                       data-testid={ `wrong-answer-${numIndex}` }
+                      disabled={ disabled }
                     >
                       {question}
                     </button>

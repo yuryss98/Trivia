@@ -8,6 +8,7 @@ export const userInfoAction = (name, gravatarEmail) => ({
   },
 });
 
-export const setScore = () => ({
+export const setScore = (points) => ({
   type: SET_SCORE,
+  points,
 });
