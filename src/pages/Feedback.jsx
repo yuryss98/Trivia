@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Header from '../components/Header';
 
 class Feedback extends Component {
   reedirectHome = () => {
@@ -10,6 +11,7 @@ class Feedback extends Component {
   render() {
     return (
       <div>
+        <Header />
         <h1 data-testid="feedback-text">Feedback</h1>
         <button
           type="button"
