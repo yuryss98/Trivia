@@ -229,8 +229,6 @@ Game.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  name: state.player.name,
-  email: state.player.gravatarEmail,
   assertions: state.player.assertions,
 });
 
