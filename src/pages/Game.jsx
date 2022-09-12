@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import { getQuestions } from '../helpers/services';
 import '../answers.css';
 
+const MIN_SECONDS = 1000;
+
 class Game extends Component {
   state = {
     index: 0,
@@ -12,16 +14,20 @@ class Game extends Component {
     nextQuestion: false,
     correctAnswer: '',
     shuffledArray: [],
+    coutdown: 30,
+    disabled: false,
   };
 
   componentDidMount() {
     this.verifyResponseCode();
+    this.intervalFunc();
   }
 
   verifyResponseCode = async () => {
     const response = await getQuestions();
     const { response_code: responseCode, results } = response;
     const CORRECT_REQUEST_CODE = 0;
+    console.log(response);
     if (responseCode !== CORRECT_REQUEST_CODE) {
       this.requestError();
     } else {
@@ -63,6 +69,8 @@ class Game extends Component {
     this.setState(({ index }) => ({
       index: index + 1,
       nextQuestion: false,
+      coutdown: 30,
+      disabled: false,
     }));
 
     const { questions } = this.state;
@@ -76,6 +84,26 @@ class Game extends Component {
     });
   };
 
+  timer = () => {
+    this.setState(({ coutdown }) => ({
+      coutdown: coutdown - 1,
+    }), () => {
+      const { coutdown } = this.state;
+
+      if (coutdown === 0) {
+        this.setState({
+          disabled: true,
+        });
+      }
+    });
+  };
+
+  intervalFunc = () => {
+    setInterval(() => {
+      this.timer();
+    }, MIN_SECONDS);
+  };
+
   render() {
     const {
       questions,
@@ -83,6 +111,8 @@ class Game extends Component {
       correctAnswer,
       index,
       nextQuestion,
+      coutdown,
+      disabled,
     } = this.state;
     const { email, name } = this.props;
     const avatarImage = md5(email).toString();
@@ -99,6 +129,8 @@ class Game extends Component {
           <p data-testid="header-player-name">{ name }</p>
           <p data-testid="header-score">Placar: 0</p>
         </header>
+
+        <p>{coutdown}</p>
         {
           questions.length && (
 
@@ -117,6 +149,7 @@ class Game extends Component {
                         type="button"
                         onClick={ this.setColor }
                         data-testid="correct-answer"
+                        disabled={ disabled }
                       >
                         { questao }
                       </button>
@@ -129,6 +162,7 @@ class Game extends Component {
                       type="button"
                       onClick={ this.setColor }
                       data-testid={ `wrong-answer-${numIndex}` }
+                      disabled={ disabled }
                     >
                       {questao}
                     </button>
