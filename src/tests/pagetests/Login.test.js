@@ -39,7 +39,14 @@ describe('Testa formulário da página de Login', () => {
     expect(playButton).toBeEnabled()
   })
 
-  test('Testa se ao clicar no Botão play, o usuário é redirecionado para a página de Games', () => {
+  test('Testa se ao clicar no Botão Settings é redirecionado para a página de Configurações', () => {
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    userEvent.click(screen.getByTestId('btn-settings'));
+    expect(history.location.pathname).toBe('/settings');
+  });
+
+  test('Testa se ao clicar no Botão play, o usuário é redirecionado para a página de Games', async () => {
     const { history } = renderWithRouterAndRedux(<App />)
 
     const nameToInput = 'batman pacífico'
@@ -53,9 +60,8 @@ describe('Testa formulário da página de Login', () => {
     userEvent.type(emailInput, emailToInput)
     userEvent.click(playButton)
 
-    const { pathname } = history.location
-    expect(pathname).toBe('/game')
-    // precisa ajustar esse teste!!!
-    // fica dando erro por conta do dispatch ser async
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/game')
+    }); 
   })
 });
