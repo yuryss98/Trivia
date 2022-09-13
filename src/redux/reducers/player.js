@@ -1,4 +1,4 @@
-import { GET_USER_INFO, SET_SCORE } from '../actions/actionsTypes';
+import { GET_USER_INFO, RESET_SCORE, SET_SCORE } from '../actions/actionsTypes';
 
 const INITIAL_STATE = {
   name: '',
@@ -20,6 +20,13 @@ const player = (state = INITIAL_STATE, action) => {
       ...state,
       score: state.score + Number(action.points),
       assertions: action.assertions,
+    };
+
+  case RESET_SCORE:
+    return {
+      ...state,
+      score: 0,
+      assertions: 0,
     };
 
   default: return state;
