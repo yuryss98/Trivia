@@ -38,4 +38,24 @@ describe('Testa formulário da página de Login', () => {
 
     expect(playButton).toBeEnabled()
   })
+
+  test('Testa se ao clicar no Botão play, o usuário é redirecionado para a página de Games', () => {
+    const { history } = renderWithRouterAndRedux(<App />)
+
+    const nameToInput = 'batman pacífico'
+    const emailToInput = 'amigodosvizinhos@gmail.com'
+
+    const nameInput = screen.getByTestId('input-player-name')
+    const emailInput = screen.getByTestId('input-gravatar-email')
+    const playButton = screen.getByTestId('btn-play')
+
+    userEvent.type(nameInput, nameToInput)
+    userEvent.type(emailInput, emailToInput)
+    userEvent.click(playButton)
+
+    const { pathname } = history.location
+    expect(pathname).toBe('/game')
+    // precisa ajustar esse teste!!!
+    // fica dando erro por conta do dispatch ser async
+  })
 });
