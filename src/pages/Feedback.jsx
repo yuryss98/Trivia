@@ -2,10 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
+import { resetScore } from '../redux/actions';
 
 class Feedback extends Component {
-  reedirectHome = () => {
-    const { history: { push } } = this.props;
+  redirectHome = () => {
+    const { history: { push }, dispatch } = this.props;
+
+    dispatch(resetScore());
     push('/');
   };
 
@@ -32,7 +35,7 @@ class Feedback extends Component {
         <button
           type="button"
           data-testid="btn-play-again"
-          onClick={ this.reedirectHome }
+          onClick={ this.redirectHome }
         >
           Play Again
 
@@ -57,6 +60,7 @@ Feedback.propTypes = {
   }).isRequired,
   assertions: PropTypes.number.isRequired,
   score: PropTypes.number.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({

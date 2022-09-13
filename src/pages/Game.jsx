@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import md5 from 'crypto-js/md5';
 import { getQuestions } from '../helpers/services';
 import '../answers.css';
 import { setScore } from '../redux/actions';
@@ -66,6 +67,18 @@ class Game extends Component {
     history.push('/');
   };
 
+  updateLocalStorage = (name, picture, score) => {
+    const avatarImage = md5(picture).toString();
+    const getLocalStorage = JSON.parse(localStorage.getItem('ranking')) || [];
+    const playerObj = {
+      name,
+      score,
+      picture: `https://www.gravatar.com/avatar/${avatarImage}`,
+    };
+    const newLocalStorage = [...getLocalStorage, playerObj];
+    localStorage.setItem('ranking', JSON.stringify(newLocalStorage));
+  };
+
   updateIndex = () => {
     const { index } = this.state;
     const { questions } = this.state;
@@ -80,7 +93,8 @@ class Game extends Component {
         this.generateQuestions(questions);
       });
     } else {
-      const { history } = this.props;
+      const { history, name, picture, score } = this.props;
+      this.updateLocalStorage(name, picture, score);
       history.push('/feedback');
     }
   };
@@ -90,10 +104,8 @@ class Game extends Component {
     switch (difficulty) {
     case 'easy':
       return 1;
-
     case 'medium':
       return 2;
-
     default: return hard;
     }
   };
@@ -157,10 +169,8 @@ class Game extends Component {
         <p>{countDown}</p>
         {
           questions.length && (
-
             <div>
               <h3 data-testid="question-category">{questions[index].category}</h3>
-
               <p data-testid="question-text">{questions[index].question}</p>
 
               <div data-testid="answer-options">
@@ -210,7 +220,6 @@ class Game extends Component {
                 onClick={ this.updateIndex }
               >
                 Next
-
               </button>
             </div>
           )
@@ -226,10 +235,16 @@ Game.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
   dispatch: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
+  picture: PropTypes.string.isRequired,
+  score: PropTypes.number.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   assertions: state.player.assertions,
+  name: state.player.name,
+  picture: state.player.gravatarEmail,
+  score: state.player.score,
 });
 
 export default connect(mapStateToProps)(Game);
