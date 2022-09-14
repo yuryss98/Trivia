@@ -16,9 +16,7 @@ class Header extends Component {
         />
         <p data-testid="header-player-name">{ name }</p>
         <h1 data-testid="header-score">
-          {' '}
           { score }
-          {' '}
         </h1>
       </header>
     );

@@ -43,6 +43,7 @@ describe('Testa formulário da página de Login', () => {
   test('Testa se ao clicar no Botão play, o usuário é redirecionado para a página de Games', () => {
     const { history } = renderWithRouterAndRedux(<App />);
 
+    const HEADER_SCORE_TEST_ID = "header-score";
     const playButton = screen.getByRole('button', { name: /play/i });
     const emailInput = screen.getByTestId('input-gravatar-email')
     const nameInput = screen.getByLabelText(/nome/i);
