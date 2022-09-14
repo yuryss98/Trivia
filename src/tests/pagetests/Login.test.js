@@ -38,4 +38,30 @@ describe('Testa formulário da página de Login', () => {
 
     expect(playButton).toBeEnabled()
   })
+
+  test('Testa se ao clicar no Botão Settings é redirecionado para a página de Configurações', () => {
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    userEvent.click(screen.getByTestId('btn-settings'));
+    expect(history.location.pathname).toBe('/settings');
+  });
+
+  test('Testa se ao clicar no Botão play, o usuário é redirecionado para a página de Games', async () => {
+    const { history } = renderWithRouterAndRedux(<App />)
+
+    const nameToInput = 'batman pacífico'
+    const emailToInput = 'amigodosvizinhos@gmail.com'
+
+    const nameInput = screen.getByTestId('input-player-name')
+    const emailInput = screen.getByTestId('input-gravatar-email')
+    const playButton = screen.getByTestId('btn-play')
+
+    userEvent.type(nameInput, nameToInput)
+    userEvent.type(emailInput, emailToInput)
+    userEvent.click(playButton)
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/game')
+    }); 
+  })
 });
