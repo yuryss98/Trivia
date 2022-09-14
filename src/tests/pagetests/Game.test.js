@@ -144,7 +144,7 @@ describe('Testa o componente <Game />', () => {
     const nameInput = screen.getByTestId(NAME_INPUT_TEST_ID);
 
     userEvent.type(emailInput, 'usuario@usuario.com');
-    userEvent.type(nameInput, 'usuario');
+    userEvent.type(nameInput, 'batman');
     userEvent.click(playButton);
     
     const question = await screen.findByTestId('question-text')
