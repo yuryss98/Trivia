@@ -90,7 +90,6 @@ class Login extends Component {
             Play
           </button>
         </form>
-
       </div>
     );
   }

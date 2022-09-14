@@ -1,26 +1,56 @@
-import { screen } from '@testing-library/react';
+import React from 'react';
 import userEvent from '@testing-library/user-event';
-import App from '../App';
-import renderWithRouterAndRedux from './helpers/renderWithRouterAndRedux';
-import { RANKING_BTN_HOME } from "./helpers";
+import { screen, waitFor } from '@testing-library/react';
+import renderWithRouterAndRedux from '../helpers/renderWithRouterAndRedux'
+import App from '../../App';
 
-export const INITIAL_STATE = {
-  player: {
-    name: 'João montador de Yoshi',
-    assertions: 0,
-    score: 0,
-    gravatarEmail: '',
-    email: '',
-  }
-}
+describe('Testa a pagina Ranking', () => {
+  const INITIAL_STATE = {
+    player: {
+      name: 'raposaAnonima',
+      assertions: 0,
+      gravatarEmail: 'alo@alguem.com',
+      score: 0,
+    }
+  };
+  localStorage.setItem('ranking', JSON.stringify([
+    {
+      name: 'bill',
+      score: 30,
+      picture: 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
+    },
+    {
+      name: 'filhoDoBill',
+      score: 80,
+      picture: 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
+    },
+    {
+      name: 'mulherDoBill',
+      score: 5,
+      picture: 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
+    },
+  ]));
+  test('Testa se o ranking renderiza corretamente', async () => {
+    const { history } = renderWithRouterAndRedux(<App />, INITIAL_STATE, '/ranking');
+    expect(history.location.pathname).toBe('/ranking');
+    const rankingTitle = await screen.findByText(/ranking/i);
+    expect(rankingTitle).toBeInTheDocument();
+    const firstPlace = screen.queryByTestId('player-name-0');
+    expect(firstPlace).toHaveTextContent('filhoDoBill');
+  });
 
-describe('Testa a pagina de Ranking', () => {
-  test('', () => {
-    const { history } = renderWithRouterAndRedux(<App/>, FIRST_STATE, '/ranking');
+  test('Testa se o botao de jogar novamente aparece', async () => {
+    const { history } = renderWithRouterAndRedux(<App />, INITIAL_STATE, '/ranking');
+    expect(history.location.pathname).toBe('/ranking');
 
-    const homeButton = screen.getByTestId(RANKING_BTN_HOME);
-    userEvent.click(homeButton);
+    const playAgainButton = await screen.findByTestId('btn-go-home');
+    expect(playAgainButton).toBeInTheDocument();
+    
+    userEvent.click(playAgainButton);
 
-    expect(history.location.pathname).toBe('/');
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/'),
+      {timeout: 2000 };
+    });
   });
 });

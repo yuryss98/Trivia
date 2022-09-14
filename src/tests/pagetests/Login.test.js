@@ -1,6 +1,7 @@
+import React from "react";
 import renderWithRouterAndRedux from "../helpers/renderWithRouterAndRedux";
 import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import App from '../../App'
 
 describe('Testa formulário da página de Login', () => {
@@ -26,7 +27,7 @@ describe('Testa formulário da página de Login', () => {
   test('Testa se quando email e senha forem preenchidos, o botão é habilitado', () => {
     renderWithRouterAndRedux(<App />)
 
-    const nameToInput = 'batman pacífico'
+    const nameToInput = 'batman'
     const emailToInput = 'amigodosvizinhos@gmail.com'
 
     const nameInput = screen.getByTestId('input-player-name')
@@ -39,29 +40,26 @@ describe('Testa formulário da página de Login', () => {
     expect(playButton).toBeEnabled()
   })
 
-  test('Testa se ao clicar no Botão Settings é redirecionado para a página de Configurações', () => {
+  test('Testa se ao clicar no Botão play, o usuário é redirecionado para a página de Games', () => {
     const { history } = renderWithRouterAndRedux(<App />);
 
-    userEvent.click(screen.getByTestId('btn-settings'));
-    expect(history.location.pathname).toBe('/settings');
-  });
-
-  test('Testa se ao clicar no Botão play, o usuário é redirecionado para a página de Games', async () => {
-    const { history } = renderWithRouterAndRedux(<App />)
-
-    const nameToInput = 'batman pacífico'
-    const emailToInput = 'amigodosvizinhos@gmail.com'
-
-    const nameInput = screen.getByTestId('input-player-name')
+    const playButton = screen.getByRole('button', { name: /play/i });
     const emailInput = screen.getByTestId('input-gravatar-email')
-    const playButton = screen.getByTestId('btn-play')
+    const nameInput = screen.getByLabelText(/nome/i);
 
-    userEvent.type(nameInput, nameToInput)
-    userEvent.type(emailInput, emailToInput)
-    userEvent.click(playButton)
+    expect(playButton).toBeInTheDocument();
+    expect(emailInput).toBeInTheDocument();
+    expect(nameInput).toBeInTheDocument();
 
-    await waitFor(() => {
+    userEvent.type(emailInput, 'usuario@usuario.com');
+    userEvent.type(nameInput, 'usuario');
+
+    expect(playButton).not.toBeDisabled();
+
+    userEvent.click(playButton);
+
+    setTimeout(() => {
       expect(history.location.pathname).toBe('/game')
-    }); 
-  })
+    }, 2000);
+  });
 });
