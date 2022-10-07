@@ -1,7 +1,7 @@
 import React from "react";
 import renderWithRouterAndRedux from "../helpers/renderWithRouterAndRedux";
 import userEvent from "@testing-library/user-event";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import App from '../../App'
 
 describe('Testa formulário da página de Login', () => {

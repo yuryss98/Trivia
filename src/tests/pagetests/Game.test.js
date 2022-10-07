@@ -82,10 +82,10 @@
 
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { queryAllByAltText, screen, waitFor } from '@testing-library/react';
-const { questionsResponse, invalidTokenQuestionsResponse } = require('../../../cypress/mocks/questions');
+import { screen, waitFor } from '@testing-library/react';
 import renderWithRouterAndRedux from '../helpers/renderWithRouterAndRedux';
 import App from '../../App';
+const { questionsResponse, invalidTokenQuestionsResponse } = require('../mocks/questions');
 
 describe('Testa o componente <Game />', () => {
   const EMAIL_INPUT_TEST_ID = 'input-gravatar-email';
