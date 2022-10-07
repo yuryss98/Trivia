@@ -1,3 +1,85 @@
+// import { screen, waitForElementToBeRemoved } from '@testing-library/react';
+// import userEvent from '@testing-library/user-event';
+// import App from '../../App';
+// import renderWithRouterAndRedux from '../helpers/renderWithRouterAndRedux';
+// import mockData from '../mock';
+
+// let globalHistory;
+
+// describe('testando pagina de game', () => {
+//   beforeEach(() => {
+//     global.fetch = jest.fn(() => Promise.resolve({
+//       json: () => Promise.resolve(mockData),
+//     }));
+
+
+//     const { history } = renderWithRouterAndRedux(<App />);
+//     globalHistory = history;
+
+//     const inputName = screen.getByTestId('input-player-name');
+//     const inputEmail = screen.getByTestId('input-gravatar-email');
+//     const buttonPlay = screen.getByRole('button', { name: 'Play' });
+
+//     userEvent.type(inputName, 'xablau');
+//     userEvent.type(inputEmail, 'xablau@xablau.com');
+//     userEvent.click(buttonPlay);
+//   });
+
+//   it('Testando se aparece Nome do usuario, email, e sua imagem', () => {
+//     expect(globalHistory.location.pathname).toBe('/game');
+//     const nameUser = screen.getByText('xablau')
+//     const gravatarUser = screen.getByRole('img');
+//     const score = screen.getByRole('heading', { level: 1, name: 0 })
+//     const btnNext = screen.queryByRole('button', { name: 'Next'});
+
+//     expect(nameUser).toBeInTheDocument();
+//     expect(gravatarUser).toBeInTheDocument();
+//     expect(score).toBeInTheDocument();
+//     expect(btnNext).not.toBeInTheDocument();
+
+//     const category = screen.getByRole('heading', { level: 3, name: 'Entertainment: Video Games' })
+//     const question1 = screen.getByRole('button', { name: 'Gauntlet' })
+//     const question2 = screen.getByRole('button', { name: 'Pac-Man' })
+//     const question3 = screen.getByRole('button', { name: 'Space Invaders' })
+//     const question4 = screen.getByRole('button', { name: 'Street Fighter' })
+//     expect(question1).toBeInTheDocument();
+//     expect(question2).toBeInTheDocument();
+//     expect(question3).toBeInTheDocument();
+//     expect(question4).toBeInTheDocument();
+//     expect(category).toBeInTheDocument()
+
+//     userEvent.click(question2)
+
+//     const scoreAtt = screen.getByRole('heading', { level: 1, name: 40 })
+//     const btnNext2 = screen.queryByRole('button', { name: 'Next'});
+//     expect(scoreAtt).toBeInTheDocument();
+//     expect(btnNext2).toBeInTheDocument();
+
+//     userEvent.click(btnNext2);
+    
+//     const category2 = screen.queryByRole('heading', { level: 3, name: 'Entertainment: Video Games' })
+//     expect(category2).not.toBeInTheDocument()
+
+//     const newCategory = screen.queryByRole('heading', { level: 3, name: 'Entertainment: Music' })
+//     const newQuestion1 = screen.getByRole('button', { name: 'Evil Empire' })
+//     const newQuestion2 = screen.getByRole('button', { name: 'Bombtrack' })
+//     const newQuestion3 = screen.getByRole('button', { name: 'The Battle Of Los Angeles' })
+//     const newQuestion4 = screen.getByRole('button', { name: 'Rage Against the Machine' })
+
+//     expect(newCategory).toBeInTheDocument();
+//     expect(newQuestion1).toBeInTheDocument();
+//     expect(newQuestion2).toBeInTheDocument();
+//     expect(newQuestion3).toBeInTheDocument();
+//     expect(newQuestion4).toBeInTheDocument();
+
+//     userEvent.click(newQuestion4)
+
+//     const newScore = screen.getByRole('heading', { level: 1, name: 80 })
+//     expect(newScore).toBeInTheDocument();
+//   })
+// });
+
+
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { queryAllByAltText, screen, waitFor } from '@testing-library/react';
